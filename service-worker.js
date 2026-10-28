@@ -1,5 +1,5 @@
-const CACHE_NAME = 'eclat-shell-v2';
-const SHELL = ['./', './manifest.json', './manifest-admin.json', './eclat-icon.svg', './eclat-admin-icon.svg', './icon-192.png', './icon-512.png'];
+const CACHE_NAME = 'eclat-admin-shell-v3';
+const SHELL = ['./', './manifest-admin.json', './eclat-admin-icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
@@ -12,10 +12,7 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
   if (request.mode === 'navigate') {
     event.respondWith(fetch(request).then(response => {
-      if (response && response.ok) {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put('./', copy));
-      }
+      if (response && response.ok) caches.open(CACHE_NAME).then(cache => cache.put('./', response.clone()));
       return response;
     }).catch(() => caches.match('./')));
   }
